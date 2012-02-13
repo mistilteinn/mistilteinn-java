@@ -2,14 +2,18 @@ package org.codefirst.mistilteinn.vcs;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.codefirst.mistilteinn.MistilteinnException;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
@@ -47,8 +51,11 @@ public class GitAdapter {
     public boolean ticket(int ticketId) throws MistilteinnException {
         CheckoutCommand checkoutCommand = getGit().checkout();
         checkoutCommand.setForce(true);
-        checkoutCommand.setName("id/" + ticketId);
-        checkoutCommand.setCreateBranch(true);
+        String branchName = "id/" + ticketId;
+        checkoutCommand.setName(branchName);
+        if (!branchExists(branchName)) {
+            checkoutCommand.setCreateBranch(true);
+        }
         try {
             checkoutCommand.call();
         } catch (JGitInternalException e) {
@@ -61,6 +68,24 @@ public class GitAdapter {
             throw new MistilteinnException(e);
         }
         return true;
+    }
+
+    /**
+     * check whether branch exists or not.
+     * @param branchName branch name
+     * @return true if branch exists
+     */
+    protected boolean branchExists(String branchName) {
+        boolean exists = false;
+        ListBranchCommand branchList = getGit().branchList();
+        List<Ref> refList = branchList.call();
+        for (Ref ref : refList) {
+            if (StringUtils.equals(ref.getName(), branchName)) {
+                exists = true;
+                break;
+            }
+        }
+        return exists;
     }
 
     /**
