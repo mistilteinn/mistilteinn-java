@@ -42,7 +42,7 @@ public class GitAdapter {
      * change branch to id/#{ticketId}.
      * @param ticketId ticket id
      * @return true if success
-     * @throws MistilteinnException
+     * @throws MistilteinnException exception
      */
     public boolean ticket(int ticketId) throws MistilteinnException {
         CheckoutCommand checkoutCommand = getGit().checkout();
