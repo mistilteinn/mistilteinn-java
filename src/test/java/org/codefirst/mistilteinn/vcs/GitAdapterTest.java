@@ -1,4 +1,4 @@
-package org.codefirst.mistilteinn;
+package org.codefirst.mistilteinn.vcs;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -12,19 +12,20 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Test;
 
-public class MistilteinnTest {
+public class GitAdapterTest {
+
     @Test
     public void testTicket() throws Exception {
         int ticketId = 100;
 
         Repository mockedRepository = mock(Repository.class);
-        Mistilteinn mistilteinn = spy(new Mistilteinn(mockedRepository));
+        GitAdapter gitAdapter = spy(new GitAdapter(mockedRepository));
         Git mockedGit = mock(Git.class);
-        doReturn(mockedGit).when(mistilteinn).getGit();
+        doReturn(mockedGit).when(gitAdapter).getGit();
         CheckoutCommand checkoutCommand = mock(CheckoutCommand.class);
         doReturn(checkoutCommand).when(mockedGit).checkout();
 
-        assertThat(mistilteinn.ticket(ticketId), is(true));
+        assertThat(gitAdapter.ticket(ticketId), is(true));
 
         verify(checkoutCommand).setName("id/" + ticketId);
         verify(checkoutCommand).call();
