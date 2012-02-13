@@ -9,7 +9,7 @@ import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 
 /**
- * Å@Mistilteinn Main API
+ * Mistilteinn Main API
  */
 public class Mistilteinn {
     /** target repository. */
@@ -33,7 +33,7 @@ public class Mistilteinn {
      * @throws RefAlreadyExistsException
      * @throws JGitInternalException
      */
-    public void ticket(int ticketId) throws JGitInternalException, RefAlreadyExistsException, RefNotFoundException, InvalidRefNameException {
+    public void ticket(int ticketId) throws MistilteinnException {
         this.gitAdapter.ticket(ticketId);
     }
 }

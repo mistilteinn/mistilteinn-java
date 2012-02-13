@@ -3,6 +3,7 @@ package org.codefirst.mistilteinn.vcs;
 import java.io.File;
 import java.io.IOException;
 
+import org.codefirst.mistilteinn.MistilteinnException;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
@@ -41,17 +42,24 @@ public class GitAdapter {
      * change branch to id/#{ticketId}.
      * @param ticketId ticket id
      * @return true if success
-     * @throws InvalidRefNameException
-     * @throws RefNotFoundException
-     * @throws RefAlreadyExistsException
-     * @throws JGitInternalException
+     * @throws MistilteinnException
      */
-    public boolean ticket(int ticketId) throws JGitInternalException, RefAlreadyExistsException, RefNotFoundException, InvalidRefNameException {
+    public boolean ticket(int ticketId) throws MistilteinnException {
         CheckoutCommand checkoutCommand = getGit().checkout();
         checkoutCommand.setForce(true);
         checkoutCommand.setName("id/" + ticketId);
         checkoutCommand.setCreateBranch(true);
-        checkoutCommand.call();
+        try {
+            checkoutCommand.call();
+        } catch (JGitInternalException e) {
+            throw new MistilteinnException(e);
+        } catch (RefAlreadyExistsException e) {
+            throw new MistilteinnException(e);
+        } catch (RefNotFoundException e) {
+            throw new MistilteinnException(e);
+        } catch (InvalidRefNameException e) {
+            throw new MistilteinnException(e);
+        }
         return true;
     }
 
