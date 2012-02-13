@@ -20,4 +20,18 @@ public class MistilteinnExceptionTest {
         MistilteinnException mistilteinnException = new MistilteinnException(innerException);
         assertThat(mistilteinnException.getMessage(), is(message));
     }
+
+    @Test
+    public void testGetMessageFromNullCause() throws Exception {
+        MistilteinnException mistilteinnException = new MistilteinnException(null);
+        assertThat(mistilteinnException.getMessage(), is(""));
+    }
+
+    @Test
+    public void testGetLocalizedMessage() throws Exception {
+        String message = "exception message";
+        Exception innerException = new Exception(message);
+        MistilteinnException mistilteinnException = new MistilteinnException(innerException);
+        assertThat(mistilteinnException.getLocalizedMessage(), is(message));
+    }
 }
