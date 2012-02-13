@@ -17,7 +17,7 @@ public class Mistilteinn {
      * @throws IOException
      */
     public Mistilteinn(String gitPath) throws IOException {
-        this.gitAdapter = new GitAdapter(gitPath);
+        this(new GitAdapter(gitPath));
     }
 
     /**
