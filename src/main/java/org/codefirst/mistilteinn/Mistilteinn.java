@@ -25,9 +25,7 @@ public class Mistilteinn {
      * @throws IOException
      */
     public Mistilteinn(String gitPath) throws IOException {
-        FileRepositoryBuilder builder = new FileRepositoryBuilder();
-        this.repository = builder.setGitDir(new File(gitPath)).readEnvironment().findGitDir().build();
-
+        this(new FileRepositoryBuilder().setGitDir(new File(gitPath)).readEnvironment().findGitDir().build());
     }
 
     /**
