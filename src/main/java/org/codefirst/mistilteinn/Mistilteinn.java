@@ -21,12 +21,24 @@ public class Mistilteinn {
     }
 
     /**
+     * constructor.
+     * @param adapter vcs adapter
+     */
+    public Mistilteinn(GitAdapter adapter) {
+        this.gitAdapter = adapter;
+    }
+
+    /**
      * change branch to id/#{ticketId}.
      * @param ticketId ticket id
      * @return true if success
      * @throws MistilteinnException exceptions
      */
     public void ticket(int ticketId) throws MistilteinnException {
-        this.gitAdapter.ticket(ticketId);
+        getVCSAdapter().ticket(ticketId);
+    }
+
+    public GitAdapter getVCSAdapter() {
+        return this.gitAdapter;
     }
 }
