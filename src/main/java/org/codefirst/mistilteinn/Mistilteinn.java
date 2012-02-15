@@ -2,6 +2,7 @@ package org.codefirst.mistilteinn;
 
 import java.io.IOException;
 
+import org.apache.commons.lang.StringUtils;
 import org.codefirst.mistilteinn.vcs.GitAdapter;
 
 /**
@@ -52,5 +53,14 @@ public class Mistilteinn {
      */
     protected GitAdapter getVCSAdapter() {
         return this.gitAdapter;
+    }
+
+    public static void main(String[] args) throws Exception {
+        Mistilteinn mistilteinn = new Mistilteinn(args[0]);
+        if (StringUtils.equals(args[1], "ticket")) {
+            mistilteinn.ticket(Integer.valueOf(args[2]));
+        } else if (StringUtils.equals(args[1], "now")) {
+            mistilteinn.now();
+        }
     }
 }

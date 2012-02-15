@@ -108,7 +108,7 @@ public class GitAdapter {
             Git git = getGit();
             // add all
             AddCommand addCommand = git.add();
-            addCommand.addFilepattern("*");
+            addCommand.addFilepattern(".");
             addCommand.call();
 
             // git-now
