@@ -38,7 +38,19 @@ public class Mistilteinn {
         getVCSAdapter().ticket(ticketId);
     }
 
-    public GitAdapter getVCSAdapter() {
+    /**
+     * commit temporary
+     * @throws MistilteinnException exception
+     */
+    public void now() throws MistilteinnException {
+        getVCSAdapter().now();
+    }
+
+    /**
+     * get a VCS adapter object.
+     * @return vcs adapter object
+     */
+    protected GitAdapter getVCSAdapter() {
         return this.gitAdapter;
     }
 }

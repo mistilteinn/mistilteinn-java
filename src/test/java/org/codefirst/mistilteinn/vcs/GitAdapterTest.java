@@ -8,9 +8,13 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
+import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CheckoutCommand;
+import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.lib.Ref;
@@ -78,5 +82,37 @@ public class GitAdapterTest {
         doReturn(refs).when(mockedCommand).call();
 
         assertThat(gitAdapter.branchExists(branchName + "a"), is(false));
+    }
+
+    @Test
+    public void testGetNowMessage() throws Exception {
+        GitAdapter gitAdapter = spy(new GitAdapter(mock(Repository.class)));
+        Calendar cal = Calendar.getInstance();
+        cal.set(2012, 1, 1, 1, 3, 4);
+        doReturn(new Date(cal.getTimeInMillis())).when(gitAdapter).getDate();
+
+        String message = gitAdapter.getNowMessage();
+        assertThat(message, is("[from now] 2012/02/01 01:03:04"));
+    }
+
+    @Test
+    public void testNow() throws Exception {
+        String nowMessage = "now message";
+
+        GitAdapter gitAdapter = spy(new GitAdapter(mock(Repository.class)));
+        Git mockedGit = mock(Git.class);
+        doReturn(mockedGit).when(gitAdapter).getGit();
+        doReturn(nowMessage).when(gitAdapter).getNowMessage();
+
+        AddCommand mockedAddCommand = mock(AddCommand.class);
+        doReturn(mockedAddCommand).when(mockedGit).add();
+        CommitCommand mockedCommitCommand = mock(CommitCommand.class);
+        doReturn(mockedCommitCommand).when(mockedGit).commit();
+
+        gitAdapter.now();
+
+        verify(mockedAddCommand).call();
+        verify(mockedCommitCommand).call();
+        verify(mockedCommitCommand).setMessage(nowMessage);
     }
 }

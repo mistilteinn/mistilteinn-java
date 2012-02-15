@@ -2,17 +2,28 @@ package org.codefirst.mistilteinn.vcs;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.codefirst.mistilteinn.MistilteinnException;
+import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CheckoutCommand;
+import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
+import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
+import org.eclipse.jgit.api.errors.NoFilepatternException;
+import org.eclipse.jgit.api.errors.NoHeadException;
+import org.eclipse.jgit.api.errors.NoMessageException;
 import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
+import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
+import org.eclipse.jgit.errors.UnmergedPathException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
@@ -89,11 +100,64 @@ public class GitAdapter {
     }
 
     /**
+     * commit temporary
+     * @throws MistilteinnException exception
+     */
+    public void now() throws MistilteinnException {
+        try {
+            Git git = getGit();
+            // add all
+            AddCommand addCommand = git.add();
+            addCommand.addFilepattern("*");
+            addCommand.call();
+
+            // git-now
+            CommitCommand commitCommand = git.commit();
+            commitCommand.setAll(true);
+            String message = getNowMessage();
+            commitCommand.setMessage(message);
+            commitCommand.call();
+        } catch (NoFilepatternException e) {
+            throw new MistilteinnException(e);
+        } catch (NoHeadException e) {
+            throw new MistilteinnException(e);
+        } catch (NoMessageException e) {
+            throw new MistilteinnException(e);
+        } catch (UnmergedPathException e) {
+            throw new MistilteinnException(e);
+        } catch (ConcurrentRefUpdateException e) {
+            throw new MistilteinnException(e);
+        } catch (JGitInternalException e) {
+            throw new MistilteinnException(e);
+        } catch (WrongRepositoryStateException e) {
+            throw new MistilteinnException(e);
+        }
+    }
+
+    /**
+     * get now messages.
+     * @return now message
+     */
+    protected String getNowMessage() {
+        String prefix = "[from now]";
+        DateFormat format = new SimpleDateFormat(" yyyy/MM/dd hh:mm:ss");
+        String date = format.format(getDate());
+        return prefix + date;
+    }
+
+    /**
+     * get time (for mock).
+     * @return now
+     */
+    protected Date getDate() {
+        return new Date();
+    }
+
+    /**
      * get JGit API.
      * @return Git
      */
     protected Git getGit() {
         return new Git(this.repository);
     }
-
 }
