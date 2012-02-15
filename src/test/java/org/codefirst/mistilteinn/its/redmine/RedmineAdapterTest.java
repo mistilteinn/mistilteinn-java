@@ -58,7 +58,8 @@ public class RedmineAdapterTest {
         Map<String, String> options = new LinkedHashMap<String, String>();
         options.put("foo", "bar");
 
-        new RedmineAdapter().setOptions(options);
-        assertThat(options.get("foo"), is("bar"));
+        RedmineAdapter redmineAdapter = new RedmineAdapter();
+        redmineAdapter.setOptions(options);
+        assertThat(redmineAdapter.getOptions().get("foo"), is("bar"));
     }
 }
