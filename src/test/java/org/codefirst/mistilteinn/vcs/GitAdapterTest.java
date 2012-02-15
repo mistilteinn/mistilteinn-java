@@ -17,8 +17,12 @@ import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
+import org.eclipse.jgit.api.LogCommand;
+import org.eclipse.jgit.api.ResetCommand;
+import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Test;
 
 public class GitAdapterTest {
@@ -114,5 +118,46 @@ public class GitAdapterTest {
         verify(mockedAddCommand).call();
         verify(mockedCommitCommand).call();
         verify(mockedCommitCommand).setMessage(nowMessage);
+    }
+
+    @Test
+    public void testFixup() throws Exception {
+        String commitMessage = "commit message";
+
+        GitAdapter gitAdapter = spy(new GitAdapter(mock(Repository.class)));
+        Git mockedGit = mock(Git.class);
+        doReturn(mockedGit).when(gitAdapter).getGit();
+
+        // mock log command
+        RevCommit mockedCommit = mock(RevCommit.class);
+        doReturn("[from now] 2011/01/23 01:23:45").when(gitAdapter).getShortMessage(mockedCommit);
+        List<RevCommit> commits = new ArrayList<RevCommit>();
+        commits.add(mockedCommit);
+
+        LogCommand mockedLogCommand = mock(LogCommand.class);
+        doReturn(mockedLogCommand).when(mockedGit).log();
+        doReturn(commits).when(mockedLogCommand).call();
+
+        // mock reset command
+        ResetCommand mockedResetCommand = mock(ResetCommand.class);
+        doReturn(mockedResetCommand).when(mockedGit).reset();
+
+        // mock add command
+        AddCommand mockedAddCommand = mock(AddCommand.class);
+        doReturn(mockedAddCommand).when(mockedGit).add();
+
+        // mock commit command
+        CommitCommand mockedCommitCommand = mock(CommitCommand.class);
+        doReturn(mockedCommitCommand).when(mockedGit).commit();
+
+        gitAdapter.fixup(commitMessage);
+
+        verify(mockedGit).add();
+        verify(mockedGit).reset();
+        verify(mockedGit).log();
+        verify(mockedGit).commit();
+
+        verify(mockedResetCommand).setMode(ResetType.MIXED);
+        verify(mockedCommitCommand).setMessage(commitMessage);
     }
 }

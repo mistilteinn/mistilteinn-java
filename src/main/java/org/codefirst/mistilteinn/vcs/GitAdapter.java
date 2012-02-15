@@ -14,6 +14,8 @@ import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
+import org.eclipse.jgit.api.ResetCommand;
+import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
@@ -26,6 +28,7 @@ import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 import org.eclipse.jgit.errors.UnmergedPathException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 /**
@@ -107,9 +110,7 @@ public class GitAdapter {
         try {
             Git git = getGit();
             // add all
-            AddCommand addCommand = git.add();
-            addCommand.addFilepattern(".");
-            addCommand.call();
+            addAll(git);
 
             // git-now
             CommitCommand commitCommand = git.commit();
@@ -132,6 +133,69 @@ public class GitAdapter {
         } catch (WrongRepositoryStateException e) {
             throw new MistilteinnException(e);
         }
+    }
+
+    private void addAll(Git git) throws NoFilepatternException {
+        AddCommand addCommand = git.add();
+        addCommand.addFilepattern(".");
+        addCommand.call();
+    }
+
+    public void fixup(String message) throws MistilteinnException {
+        try {
+            Git git = getGit();
+
+            // search a first now commit
+            RevCommit firstNowCommit = null;
+            for (RevCommit commit : git.log().call()) {
+                firstNowCommit = commit;
+                if (!StringUtils.contains(getShortMessage(commit), "[from now]")) {
+                    break;
+                }
+            }
+
+            if (firstNowCommit == null) {
+                return;
+            }
+
+            // reset to a first now commit
+            ResetCommand resetCommand = git.reset();
+            resetCommand.setMode(ResetType.MIXED);
+            resetCommand.setRef(firstNowCommit.getId().getName());
+            resetCommand.call();
+
+            // add all
+            addAll(git);
+
+            // commit amend with message
+            CommitCommand commitCommand = git.commit();
+            commitCommand.setAll(true);
+            commitCommand.setMessage(message);
+            commitCommand.call();
+        } catch (NoHeadException e) {
+            throw new MistilteinnException(e);
+        } catch (JGitInternalException e) {
+            throw new MistilteinnException(e);
+        } catch (IOException e) {
+            throw new MistilteinnException(e);
+        } catch (NoFilepatternException e) {
+            throw new MistilteinnException(e);
+        } catch (NoMessageException e) {
+            throw new MistilteinnException(e);
+        } catch (ConcurrentRefUpdateException e) {
+            throw new MistilteinnException(e);
+        } catch (WrongRepositoryStateException e) {
+            throw new MistilteinnException(e);
+        }
+    }
+
+    /**
+     * get commit message (for mock).
+     * @param commit commit
+     * @return message
+     */
+    protected String getShortMessage(RevCommit commit) {
+        return commit.getShortMessage();
     }
 
     /**

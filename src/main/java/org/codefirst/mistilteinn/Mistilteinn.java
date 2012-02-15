@@ -48,6 +48,15 @@ public class Mistilteinn {
     }
 
     /**
+     * fixup now commmits.
+     * @param message commit message
+     * @throws MistilteinnException exception
+     */
+    public void fixup(String message) throws MistilteinnException {
+        getVCSAdapter().fixup(message);
+    }
+
+    /**
      * get a VCS adapter object.
      * @return vcs adapter object
      */
@@ -61,6 +70,8 @@ public class Mistilteinn {
             mistilteinn.ticket(Integer.valueOf(args[2]));
         } else if (StringUtils.equals(args[1], "now")) {
             mistilteinn.now();
+        } else if (StringUtils.equals(args[1], "fixup")) {
+            mistilteinn.fixup(args[2]);
         }
     }
 }
