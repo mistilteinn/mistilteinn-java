@@ -159,10 +159,7 @@ public class GitAdapter {
             }
 
             // reset to a first now commit
-            ResetCommand resetCommand = git.reset();
-            resetCommand.setMode(ResetType.MIXED);
-            resetCommand.setRef(firstNowCommit.getId().getName());
-            resetCommand.call();
+            resetTo(firstNowCommit, ResetType.MIXED);
 
             // add all
             addAll(git);
@@ -187,6 +184,19 @@ public class GitAdapter {
         } catch (WrongRepositoryStateException e) {
             throw new MistilteinnException(e);
         }
+    }
+
+    /**
+     * reset to indicated revision.
+     * @param commit commit
+     * @param resetType reset type
+     * @throws IOException IO exception when command is called.
+     */
+    protected void resetTo(RevCommit commit, ResetType resetType) throws IOException {
+        ResetCommand resetCommand = getGit().reset();
+        resetCommand.setMode(resetType);
+        resetCommand.setRef(commit.getId().getName());
+        resetCommand.call();
     }
 
     /**

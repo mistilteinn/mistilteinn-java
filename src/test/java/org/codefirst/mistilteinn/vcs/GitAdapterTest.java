@@ -138,10 +138,6 @@ public class GitAdapterTest {
         doReturn(mockedLogCommand).when(mockedGit).log();
         doReturn(commits).when(mockedLogCommand).call();
 
-        // mock reset command
-        ResetCommand mockedResetCommand = mock(ResetCommand.class);
-        doReturn(mockedResetCommand).when(mockedGit).reset();
-
         // mock add command
         AddCommand mockedAddCommand = mock(AddCommand.class);
         doReturn(mockedAddCommand).when(mockedGit).add();
@@ -157,7 +153,26 @@ public class GitAdapterTest {
         verify(mockedGit).log();
         verify(mockedGit).commit();
 
-        verify(mockedResetCommand).setMode(ResetType.MIXED);
         verify(mockedCommitCommand).setMessage(commitMessage);
+    }
+
+    @Test
+    public void testResetTo() throws Exception {
+        ResetType resetType = ResetType.MIXED;
+
+        GitAdapter gitAdapter = spy(new GitAdapter(mock(Repository.class)));
+        Git mockedGit = mock(Git.class);
+        doReturn(mockedGit).when(gitAdapter).getGit();
+
+        // mock reset command
+        ResetCommand mockedResetCommand = mock(ResetCommand.class);
+        doReturn(mockedResetCommand).when(mockedGit).reset();
+
+        RevCommit commit = mock(RevCommit.class);
+
+        gitAdapter.resetTo(commit, resetType);
+
+        verify(mockedResetCommand).setMode(resetType);
+        verify(mockedResetCommand).call();
     }
 }
