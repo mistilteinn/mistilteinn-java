@@ -138,6 +138,8 @@ public class GitAdapterTest {
         doReturn(mockedLogCommand).when(mockedGit).log();
         doReturn(commits).when(mockedLogCommand).call();
 
+        doReturn(null).when(gitAdapter).resetTo(mockedCommit, ResetType.MIXED);
+
         // mock add command
         AddCommand mockedAddCommand = mock(AddCommand.class);
         doReturn(mockedAddCommand).when(mockedGit).add();
@@ -149,7 +151,6 @@ public class GitAdapterTest {
         gitAdapter.fixup(commitMessage);
 
         verify(mockedGit).add();
-        verify(mockedGit).reset();
         verify(mockedGit).log();
         verify(mockedGit).commit();
 

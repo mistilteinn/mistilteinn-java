@@ -201,11 +201,11 @@ public class GitAdapter {
      * @param resetType reset type
      * @throws IOException IO exception when command is called.
      */
-    protected void resetTo(RevCommit commit, ResetType resetType) throws IOException {
+    protected Ref resetTo(RevCommit commit, ResetType resetType) throws IOException {
         ResetCommand resetCommand = getGit().reset();
         resetCommand.setMode(resetType);
         resetCommand.setRef(commit.getId().getName());
-        resetCommand.call();
+        return resetCommand.call();
     }
 
     /**
