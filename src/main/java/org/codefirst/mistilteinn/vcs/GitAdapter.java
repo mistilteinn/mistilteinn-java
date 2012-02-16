@@ -135,12 +135,11 @@ public class GitAdapter {
         }
     }
 
-    protected void addAll() throws NoFilepatternException {
-        AddCommand addCommand = getGit().add();
-        addCommand.addFilepattern(".");
-        addCommand.call();
-    }
-
+    /**
+     * fixup now commits.
+     * @param message message
+     * @throws MistilteinnException exception
+     */
     public void fixup(String message) throws MistilteinnException {
         try {
             Git git = getGit();
@@ -184,6 +183,16 @@ public class GitAdapter {
         } catch (WrongRepositoryStateException e) {
             throw new MistilteinnException(e);
         }
+    }
+
+    /**
+     * call add -A
+     * @throws NoFilepatternException exception when git add called
+     */
+    protected void addAll() throws NoFilepatternException {
+        AddCommand addCommand = getGit().add();
+        addCommand.addFilepattern(".");
+        addCommand.call();
     }
 
     /**
