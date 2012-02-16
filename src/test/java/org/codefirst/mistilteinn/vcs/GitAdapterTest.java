@@ -207,4 +207,17 @@ public class GitAdapterTest {
         verify(mockedCheckoutCommand).setName(branchName);
         verify(mockedCheckoutCommand).call();
     }
+
+    @Test
+    public void testCommit() throws Exception {
+        String message = "message";
+        CommitCommand mockedCommitCommand = mock(CommitCommand.class);
+        doReturn(mockedCommitCommand).when(mockedGit).commit();
+
+        gitAdapter.commit(message);
+
+        verify(mockedCommitCommand).setMessage(message);
+        verify(mockedCommitCommand).call();
+    }
+
 }

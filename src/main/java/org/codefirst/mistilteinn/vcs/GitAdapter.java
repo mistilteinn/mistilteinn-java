@@ -117,11 +117,7 @@ public class GitAdapter {
             addAll();
 
             // git-now
-            CommitCommand commitCommand = git.commit();
-            commitCommand.setAll(true);
-            String message = getNowMessage();
-            commitCommand.setMessage(message);
-            commitCommand.call();
+            commit(getNowMessage());
         } catch (NoFilepatternException e) {
             throw new MistilteinnException(e);
         } catch (NoHeadException e) {
@@ -140,38 +136,38 @@ public class GitAdapter {
     }
 
     /**
+     * commit with message
+     * @param message message
+     * @throws NoHeadException
+     * @throws NoMessageException
+     * @throws UnmergedPathException
+     * @throws ConcurrentRefUpdateException
+     * @throws WrongRepositoryStateException
+     */
+    protected void commit(String message) throws NoHeadException, NoMessageException, UnmergedPathException, ConcurrentRefUpdateException, WrongRepositoryStateException {
+        CommitCommand commitCommand = getGit().commit();
+        commitCommand.setAll(true);
+        commitCommand.setMessage(message);
+        commitCommand.call();
+    }
+
+    /**
      * fixup now commits.
      * @param message message
      * @throws MistilteinnException exception
      */
     public void fixup(String message) throws MistilteinnException {
         try {
-            Git git = getGit();
-
             // search a first now commit
-            RevCommit firstNowCommit = null;
-            for (RevCommit commit : git.log().call()) {
-                firstNowCommit = commit;
-                if (!StringUtils.contains(getShortMessage(commit), "[from now]")) {
-                    break;
-                }
-            }
+            RevCommit firstNowCommit = searchFirstNowCommit();
 
             if (firstNowCommit == null) {
                 return;
             }
 
-            // reset to a first now commit
             resetTo(firstNowCommit, ResetType.MIXED);
-
-            // add all
             addAll();
-
-            // commit amend with message
-            CommitCommand commitCommand = git.commit();
-            commitCommand.setAll(true);
-            commitCommand.setMessage(message);
-            commitCommand.call();
+            commit(message);
         } catch (NoHeadException e) {
             throw new MistilteinnException(e);
         } catch (JGitInternalException e) {
@@ -187,6 +183,22 @@ public class GitAdapter {
         } catch (WrongRepositoryStateException e) {
             throw new MistilteinnException(e);
         }
+    }
+
+    /**
+     * search first now commit.
+     * @return found commit. (null if not found)
+     * @throws NoHeadException
+     */
+    protected RevCommit searchFirstNowCommit() throws NoHeadException {
+        RevCommit firstNowCommit = null;
+        for (RevCommit commit : getGit().log().call()) {
+            firstNowCommit = commit;
+            if (!StringUtils.contains(getShortMessage(commit), "[from now]")) {
+                break;
+            }
+        }
+        return firstNowCommit;
     }
 
     /**
