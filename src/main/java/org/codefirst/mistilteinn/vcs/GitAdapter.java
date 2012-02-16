@@ -14,9 +14,12 @@ import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
+import org.eclipse.jgit.api.RebaseCommand;
+import org.eclipse.jgit.api.RebaseResult;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.api.errors.NoFilepatternException;
@@ -25,6 +28,7 @@ import org.eclipse.jgit.api.errors.NoMessageException;
 import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
+import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.errors.UnmergedPathException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
@@ -183,6 +187,58 @@ public class GitAdapter {
         } catch (WrongRepositoryStateException e) {
             throw new MistilteinnException(e);
         }
+    }
+
+    /**
+     * rebase to master branch.
+     */
+    public void masterize() throws MistilteinnException {
+        try {
+            RebaseResult rebaseResult = rebaseTo("master");
+            RevCommit currentCommit = rebaseResult.getCurrentCommit();
+            checkoutTo("master");
+            resetTo(currentCommit, ResetType.HARD);
+        } catch (NoWorkTreeException e) {
+            throw new MistilteinnException(e);
+        } catch (RefNotFoundException e) {
+            throw new MistilteinnException(e);
+        } catch (NoHeadException e) {
+            throw new MistilteinnException(e);
+        } catch (JGitInternalException e) {
+            throw new MistilteinnException(e);
+        } catch (GitAPIException e) {
+            throw new MistilteinnException(e);
+        } catch (IOException e) {
+            throw new MistilteinnException(e);
+        }
+    }
+
+    /**
+     * rebase to branch
+     * @param branchName branch name
+     * @return rebase result
+     * @throws RefNotFoundException
+     * @throws NoHeadException
+     * @throws GitAPIException
+     */
+    protected RebaseResult rebaseTo(String branchName) throws RefNotFoundException, NoHeadException, GitAPIException {
+        RebaseCommand rebaseCommand = getGit().rebase();
+        rebaseCommand.setUpstream(branchName);
+        RebaseResult rebaseResult = rebaseCommand.call();
+        return rebaseResult;
+    }
+
+    /**
+     * checkout branch.
+     * @param branchName branch name
+     * @throws RefAlreadyExistsException
+     * @throws RefNotFoundException
+     * @throws InvalidRefNameException
+     */
+    protected void checkoutTo(String branchName) throws RefAlreadyExistsException, RefNotFoundException, InvalidRefNameException {
+        CheckoutCommand checkoutCommand = getGit().checkout();
+        checkoutCommand.setName(branchName);
+        checkoutCommand.call();
     }
 
     /**

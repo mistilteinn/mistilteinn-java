@@ -18,23 +18,33 @@ import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.LogCommand;
+import org.eclipse.jgit.api.RebaseCommand;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.junit.Before;
 import org.junit.Test;
 
 public class GitAdapterTest {
+
+    private Repository mockedRepository;
+    private GitAdapter gitAdapter;
+    private Git mockedGit;
+
+    @Before
+    public void setup() throws Exception {
+        this.mockedRepository = mock(Repository.class);
+        this.gitAdapter = spy(new GitAdapter(mockedRepository));
+        this.mockedGit = mock(Git.class);
+        doReturn(this.mockedGit).when(this.gitAdapter).getGit();
+    }
 
     @Test
     public void testTicket() throws Exception {
         int ticketId = 100;
 
-        Repository mockedRepository = mock(Repository.class);
-        GitAdapter gitAdapter = spy(new GitAdapter(mockedRepository));
-        Git mockedGit = mock(Git.class);
-        doReturn(mockedGit).when(gitAdapter).getGit();
         CheckoutCommand checkoutCommand = mock(CheckoutCommand.class);
         doReturn(checkoutCommand).when(mockedGit).checkout();
 
@@ -50,8 +60,6 @@ public class GitAdapterTest {
     public void testBranchExists() throws Exception {
         GitAdapter gitAdapter = spy(new GitAdapter(mock(Repository.class)));
         String branchName = "branch";
-
-        Git mockedGit = mock(Git.class);
 
         ListBranchCommand mockedCommand = mock(ListBranchCommand.class);
 
@@ -69,10 +77,8 @@ public class GitAdapterTest {
 
     @Test
     public void testBranchNotExists() throws Exception {
-        GitAdapter gitAdapter = spy(new GitAdapter(mock(Repository.class)));
-        String branchName = "branch";
 
-        Git mockedGit = mock(Git.class);
+        String branchName = "branch";
 
         ListBranchCommand mockedCommand = mock(ListBranchCommand.class);
 
@@ -90,7 +96,6 @@ public class GitAdapterTest {
 
     @Test
     public void testGetNowMessage() throws Exception {
-        GitAdapter gitAdapter = spy(new GitAdapter(mock(Repository.class)));
         Calendar cal = Calendar.getInstance();
         cal.set(2012, 1, 1, 1, 3, 4);
         doReturn(new Date(cal.getTimeInMillis())).when(gitAdapter).getDate();
@@ -103,9 +108,6 @@ public class GitAdapterTest {
     public void testNow() throws Exception {
         String nowMessage = "now message";
 
-        GitAdapter gitAdapter = spy(new GitAdapter(mock(Repository.class)));
-        Git mockedGit = mock(Git.class);
-        doReturn(mockedGit).when(gitAdapter).getGit();
         doReturn(nowMessage).when(gitAdapter).getNowMessage();
 
         AddCommand mockedAddCommand = mock(AddCommand.class);
@@ -123,10 +125,6 @@ public class GitAdapterTest {
     @Test
     public void testFixup() throws Exception {
         String commitMessage = "commit message";
-
-        GitAdapter gitAdapter = spy(new GitAdapter(mock(Repository.class)));
-        Git mockedGit = mock(Git.class);
-        doReturn(mockedGit).when(gitAdapter).getGit();
 
         // mock log command
         RevCommit mockedCommit = mock(RevCommit.class);
@@ -176,10 +174,6 @@ public class GitAdapterTest {
     public void testResetTo() throws Exception {
         ResetType resetType = ResetType.MIXED;
 
-        GitAdapter gitAdapter = spy(new GitAdapter(mock(Repository.class)));
-        Git mockedGit = mock(Git.class);
-        doReturn(mockedGit).when(gitAdapter).getGit();
-
         // mock reset command
         ResetCommand mockedResetCommand = mock(ResetCommand.class);
         doReturn(mockedResetCommand).when(mockedGit).reset();
@@ -190,5 +184,27 @@ public class GitAdapterTest {
 
         verify(mockedResetCommand).setMode(resetType);
         verify(mockedResetCommand).call();
+    }
+
+    @Test
+    public void testRebaseTo() throws Exception {
+        String branchName = "branch";
+        RebaseCommand mockedRebaseCommand = mock(RebaseCommand.class);
+        doReturn(mockedRebaseCommand).when(mockedGit).rebase();
+        gitAdapter.rebaseTo(branchName);
+
+        verify(mockedRebaseCommand).setUpstream("branch");
+        verify(mockedRebaseCommand).call();
+    }
+
+    @Test
+    public void testCheckoutTo() throws Exception {
+        String branchName = "branch";
+        CheckoutCommand mockedCheckoutCommand = mock(CheckoutCommand.class);
+        doReturn(mockedCheckoutCommand).when(mockedGit).checkout();
+        gitAdapter.checkoutTo(branchName);
+
+        verify(mockedCheckoutCommand).setName(branchName);
+        verify(mockedCheckoutCommand).call();
     }
 }

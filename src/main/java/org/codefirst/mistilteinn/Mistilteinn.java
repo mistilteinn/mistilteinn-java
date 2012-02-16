@@ -57,6 +57,13 @@ public class Mistilteinn {
     }
 
     /**
+     * rebase to master branch.
+     */
+    public void masterize() throws MistilteinnException {
+        getVCSAdapter().masterize();
+    }
+
+    /**
      * get a VCS adapter object.
      * @return vcs adapter object
      */
@@ -72,6 +79,8 @@ public class Mistilteinn {
             mistilteinn.now();
         } else if (StringUtils.equals(args[1], "fixup")) {
             mistilteinn.fixup(args[2]);
+        } else if (StringUtils.equals(args[1], "masterize")) {
+            mistilteinn.masterize();
         }
     }
 }
