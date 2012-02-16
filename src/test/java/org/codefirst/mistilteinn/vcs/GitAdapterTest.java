@@ -157,6 +157,21 @@ public class GitAdapterTest {
     }
 
     @Test
+    public void testAddAll() throws Exception {
+        GitAdapter gitAdapter = spy(new GitAdapter(mock(Repository.class)));
+        Git mockedGit = mock(Git.class);
+        doReturn(mockedGit).when(gitAdapter).getGit();
+
+        AddCommand mockedAddCommand = mock(AddCommand.class);
+        doReturn(mockedAddCommand).when(mockedGit).add();
+
+        gitAdapter.addAll();
+
+        verify(mockedAddCommand).addFilepattern(".");
+        verify(mockedAddCommand).call();
+    }
+
+    @Test
     public void testResetTo() throws Exception {
         ResetType resetType = ResetType.MIXED;
 

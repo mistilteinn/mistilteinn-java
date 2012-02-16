@@ -110,7 +110,7 @@ public class GitAdapter {
         try {
             Git git = getGit();
             // add all
-            addAll(git);
+            addAll();
 
             // git-now
             CommitCommand commitCommand = git.commit();
@@ -135,8 +135,8 @@ public class GitAdapter {
         }
     }
 
-    private void addAll(Git git) throws NoFilepatternException {
-        AddCommand addCommand = git.add();
+    protected void addAll() throws NoFilepatternException {
+        AddCommand addCommand = getGit().add();
         addCommand.addFilepattern(".");
         addCommand.call();
     }
@@ -162,7 +162,7 @@ public class GitAdapter {
             resetTo(firstNowCommit, ResetType.MIXED);
 
             // add all
-            addAll(git);
+            addAll();
 
             // commit amend with message
             CommitCommand commitCommand = git.commit();
