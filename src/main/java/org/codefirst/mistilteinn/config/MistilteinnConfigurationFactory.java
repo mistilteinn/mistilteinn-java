@@ -10,6 +10,13 @@ import org.codefirst.mistilteinn.MistilteinnException;
 public class MistilteinnConfigurationFactory {
 
     /**
+     * Invisible constructor.
+     */
+    private MistilteinnConfigurationFactory() {
+        super();
+    }
+
+    /**
      * create configuration accessor.
      * @param projectPath project path
      * @return configuration accessor
