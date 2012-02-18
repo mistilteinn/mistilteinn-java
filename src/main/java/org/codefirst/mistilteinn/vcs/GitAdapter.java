@@ -28,7 +28,6 @@ import org.eclipse.jgit.api.errors.NoMessageException;
 import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
-import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.errors.UnmergedPathException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
@@ -206,15 +205,9 @@ public class GitAdapter {
             RevCommit currentCommit = rebaseResult.getCurrentCommit();
             checkoutTo("master");
             resetTo(currentCommit, ResetType.HARD);
-        } catch (NoWorkTreeException e) {
-            throw new MistilteinnException(e);
-        } catch (RefNotFoundException e) {
-            throw new MistilteinnException(e);
-        } catch (NoHeadException e) {
+        } catch (GitAPIException e) {
             throw new MistilteinnException(e);
         } catch (JGitInternalException e) {
-            throw new MistilteinnException(e);
-        } catch (GitAPIException e) {
             throw new MistilteinnException(e);
         } catch (IOException e) {
             throw new MistilteinnException(e);
