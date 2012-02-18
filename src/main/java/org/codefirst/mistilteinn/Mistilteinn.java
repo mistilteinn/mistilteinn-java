@@ -3,6 +3,11 @@ package org.codefirst.mistilteinn;
 import java.io.IOException;
 
 import org.apache.commons.lang.StringUtils;
+import org.codefirst.mistilteinn.config.MistilteinnConfiguration;
+import org.codefirst.mistilteinn.config.MistilteinnConfigurationFactory;
+import org.codefirst.mistilteinn.its.ITS;
+import org.codefirst.mistilteinn.its.ITSFactory;
+import org.codefirst.mistilteinn.its.Ticket;
 import org.codefirst.mistilteinn.vcs.GitAdapter;
 
 /**
@@ -64,6 +69,19 @@ public class Mistilteinn {
     }
 
     /**
+     * list tickets.
+     * @throws MistilteinnException fail to access to ITS
+     */
+    public void list() throws MistilteinnException {
+        MistilteinnConfiguration config = MistilteinnConfigurationFactory.createConfiguration(".");
+        ITS its = ITSFactory.createITS(config);
+        Ticket[] tickets = its.listTickets();
+        for (Ticket ticket : tickets) {
+            System.out.println(ticket);
+        }
+    }
+
+    /**
      * get a VCS adapter object.
      * @return vcs adapter object
      */
@@ -81,6 +99,8 @@ public class Mistilteinn {
             mistilteinn.fixup(args[2]);
         } else if (StringUtils.equals(args[1], "masterize")) {
             mistilteinn.masterize();
+        } else if (StringUtils.equals(args[1], "list")) {
+            mistilteinn.list();
         }
     }
 }

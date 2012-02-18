@@ -18,10 +18,15 @@ import org.redmine.ta.beans.Issue;
  * Redmine ITS Adapter.
  */
 public class RedmineAdapter implements ITS {
+    /** redmine id. */
+    public static final String ID = "redmine";
+
     /** the key of options (URL of Redmine). */
-    private static final String OPTION_URL = "redmine.url";
+    private static final String OPTION_URL = "url";
     /** the key of options (API Key of Redmine). */
-    private static final String OPTION_APIKEY = "redmine.apikey";
+    private static final String OPTION_APIKEY = "apikey";
+    /** the key of options (Project id of Redmine). */
+    private static final String OPTION_PROJECT = "project";
 
     /** options */
     private Map<String, String> options;
@@ -30,31 +35,22 @@ public class RedmineAdapter implements ITS {
     private String redmineUrl;
     /** the API key of Redmine. */
     private String redmineApiKey;
+    /** the project id of Redmine. */
+    private String projectId;
 
     /**
-     * {@inheritDoc} <br>
-     * Available options.
-     * <ul>
-     * <li>redmine.url</li>
-     * <li>redmine.apikey</li>
-     * </ul>
+     * Constructor.
+     * @param configuration configuration map
      */
-    public void setOptions(Map<String, String> options) {
-        this.options = options;
+    public RedmineAdapter(Map<String, String> configuration) {
+        this.options = configuration;
         this.redmineUrl = options.get(OPTION_URL);
         this.redmineApiKey = options.get(OPTION_APIKEY);
+        this.projectId = options.get(OPTION_PROJECT);
     }
 
     /** {@inheritDoc} */
-    public Map<String, String> getOptions() {
-        return this.options;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @throws MistilteinnException failed to get tickets
-     */
-    public Ticket[] listTickets(String projectId) throws MistilteinnException {
+    public Ticket[] listTickets() throws MistilteinnException {
         RedmineManager mgr = getRedmineManager();
         List<Ticket> list = new ArrayList<Ticket>();
         try {

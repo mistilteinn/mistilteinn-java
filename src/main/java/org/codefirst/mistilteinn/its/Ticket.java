@@ -60,4 +60,11 @@ public class Ticket {
         this.subject = subject;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[").append(this.id).append("]").append(this.subject);
+        return sb.toString();
+    }
+
 }

@@ -1,5 +1,7 @@
 package org.codefirst.mistilteinn.its;
 
+import org.apache.commons.lang.StringUtils;
+import org.codefirst.mistilteinn.config.MistilteinnConfiguration;
 import org.codefirst.mistilteinn.its.redmine.RedmineAdapter;
 
 /**
@@ -16,12 +18,14 @@ public class ITSFactory {
 
     /**
      * create an instance of ITS.
-     * @param itsId identifier of ITS
+     * @param config configuration
      * @return an instance of ITS
      */
-    ITS createITS(String itsId) {
-        // TODO should be pluggable and configurable
-        return new RedmineAdapter();
+    public static ITS createITS(MistilteinnConfiguration config) {
+        if (StringUtils.equals(config.getITS(), RedmineAdapter.ID)) {
+            return new RedmineAdapter(config.getConfiguration(RedmineAdapter.ID));
+        }
+        return null;
     }
 
 }

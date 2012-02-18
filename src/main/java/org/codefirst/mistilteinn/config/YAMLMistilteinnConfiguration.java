@@ -1,5 +1,8 @@
 package org.codefirst.mistilteinn.config;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -25,6 +28,15 @@ public class YAMLMistilteinnConfiguration implements MistilteinnConfiguration {
 
     /** configuration representation. */
     private Map<String, Object> yaml;
+
+    /**
+     * Constructor.
+     * @param projectPath the path of project
+     * @throws FileNotFoundException io error
+     */
+    public YAMLMistilteinnConfiguration(String projectPath) throws FileNotFoundException {
+        this(new FileInputStream(new File(projectPath, ".mistilteinn/config.yaml")));
+    }
 
     /**
      * Constructor.

@@ -15,11 +15,21 @@ import java.util.Map;
 
 import org.codefirst.mistilteinn.MistilteinnException;
 import org.codefirst.mistilteinn.its.Ticket;
+import org.junit.Before;
 import org.junit.Test;
 import org.redmine.ta.RedmineManager;
 import org.redmine.ta.beans.Issue;
 
 public class RedmineAdapterTest {
+
+    private Map<String, String> configuration = new LinkedHashMap<String, String>();
+
+    @Before
+    public void setUp() {
+        this.configuration.put("url", "http://redmine.org");
+        this.configuration.put("project", "projectId");
+        this.configuration.put("apikey", "APIKEY");
+    }
 
     @Test
     public void testListTickets() throws Exception {
@@ -33,10 +43,10 @@ public class RedmineAdapterTest {
         RedmineManager mockedRedmineManager = mock(RedmineManager.class);
         doReturn(issues).when(mockedRedmineManager).getIssues("projectId", null);
 
-        RedmineAdapter redmineAdapter = spy(new RedmineAdapter());
+        RedmineAdapter redmineAdapter = spy(new RedmineAdapter(this.configuration));
         doReturn(mockedRedmineManager).when(redmineAdapter).getRedmineManager();
 
-        Ticket[] tickets = redmineAdapter.listTickets("projectId");
+        Ticket[] tickets = redmineAdapter.listTickets();
         assertThat(tickets.length, is(1));
         assertThat(tickets[0].getId(), is(Integer.valueOf(1)));
         assertThat(tickets[0].getSubject(), is("subject"));
@@ -47,19 +57,10 @@ public class RedmineAdapterTest {
         RedmineManager mockedRedmineManager = mock(RedmineManager.class);
         doThrow(new IOException()).when(mockedRedmineManager).getIssues("projectId", null);
 
-        RedmineAdapter redmineAdapter = spy(new RedmineAdapter());
+        RedmineAdapter redmineAdapter = spy(new RedmineAdapter(this.configuration));
         doReturn(mockedRedmineManager).when(redmineAdapter).getRedmineManager();
 
-        redmineAdapter.listTickets("projectId");
+        redmineAdapter.listTickets();
     }
 
-    @Test
-    public void testOptions() throws Exception {
-        Map<String, String> options = new LinkedHashMap<String, String>();
-        options.put("foo", "bar");
-
-        RedmineAdapter redmineAdapter = new RedmineAdapter();
-        redmineAdapter.setOptions(options);
-        assertThat(redmineAdapter.getOptions().get("foo"), is("bar"));
-    }
 }
