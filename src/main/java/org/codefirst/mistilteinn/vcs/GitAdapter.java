@@ -112,11 +112,7 @@ public class GitAdapter {
      */
     public void now() throws MistilteinnException {
         try {
-            Git git = getGit();
-            // add all
             addAll();
-
-            // git-now
             commit(getNowMessage());
         } catch (NoFilepatternException e) {
             throw new MistilteinnException(e);
@@ -236,8 +232,7 @@ public class GitAdapter {
     protected RebaseResult rebaseTo(String branchName) throws RefNotFoundException, NoHeadException, GitAPIException {
         RebaseCommand rebaseCommand = getGit().rebase();
         rebaseCommand.setUpstream(branchName);
-        RebaseResult rebaseResult = rebaseCommand.call();
-        return rebaseResult;
+        return rebaseCommand.call();
     }
 
     /**
