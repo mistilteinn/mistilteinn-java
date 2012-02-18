@@ -65,14 +65,17 @@ public class YAMLMistilteinnConfiguration implements MistilteinnConfiguration {
     public void save(OutputStream os) throws MistilteinnException {
         String dump = new Yaml().dump(yaml);
 
-        OutputStreamWriter osw = new OutputStreamWriter(os);
+        OutputStreamWriter osw = null;
         try {
+            osw = new OutputStreamWriter(os, "UTF-8");
             osw.write(dump);
         } catch (IOException e) {
             throw new MistilteinnException(e);
         } finally {
             try {
-                osw.close();
+                if (osw != null) {
+                    osw.close();
+                }
             } catch (IOException e) {
                 // do nothing
             }
