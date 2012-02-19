@@ -1,6 +1,11 @@
 Mistilteinn Java Library
 =====================================
+A Mistilteinn library implemented by Java.
 
+Committers
+------------------------------
+* @suer
+* @mallowlabs
 
 Requirements
 ------------------------------
@@ -8,7 +13,7 @@ Java6 or later
 
 Usage
 ------------------------------
-create a Mistiltein object
+create a Mistilteinn object
 
     Mistilteinn mistilteinn = new Mistilteinn("/path/to/.git");
 
