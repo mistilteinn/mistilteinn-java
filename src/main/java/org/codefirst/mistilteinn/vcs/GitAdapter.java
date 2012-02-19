@@ -60,6 +60,14 @@ public class GitAdapter {
     }
 
     /**
+     * Get the repository directory.
+     * @return repository directory.
+     */
+    public File getDirectory() {
+        return this.repository.getDirectory();
+    }
+
+    /**
      * change branch to id/#{ticketId}.
      * @param ticketId ticket id
      * @return true if success

@@ -21,6 +21,8 @@ import org.yaml.snakeyaml.Yaml;
  */
 @SuppressWarnings("unchecked")
 public class YAMLMistilteinnConfiguration implements MistilteinnConfiguration {
+    /** the path to yaml file. */
+    private static final String MISTILTEINN_CONFIG_YAML = ".mistilteinn/config.yaml";
     /** the key of its configuration. */
     private static final String TICKET = "ticket";
     /** the sub key of its configuration. */
@@ -35,7 +37,7 @@ public class YAMLMistilteinnConfiguration implements MistilteinnConfiguration {
      * @throws FileNotFoundException io error
      */
     public YAMLMistilteinnConfiguration(String projectPath) throws FileNotFoundException {
-        this(new FileInputStream(new File(projectPath, ".mistilteinn/config.yaml")));
+        this(new FileInputStream(new File(projectPath, MISTILTEINN_CONFIG_YAML)));
     }
 
     /**

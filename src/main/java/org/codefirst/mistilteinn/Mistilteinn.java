@@ -1,5 +1,6 @@
 package org.codefirst.mistilteinn;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.lang.StringUtils;
@@ -73,7 +74,13 @@ public class Mistilteinn {
      * @throws MistilteinnException fail to access to ITS
      */
     public void list() throws MistilteinnException {
-        MistilteinnConfiguration config = MistilteinnConfigurationFactory.createConfiguration(".");
+        File scmDirectory = this.gitAdapter.getDirectory();
+        File projectDirectory = scmDirectory.getParentFile();
+        String projectPath = ".";
+        if (projectDirectory != null) {
+            projectPath = projectDirectory.getPath();
+        }
+        MistilteinnConfiguration config = MistilteinnConfigurationFactory.createConfiguration(projectPath);
         ITS its = ITSFactory.createITS(config);
         Ticket[] tickets = its.listTickets();
         for (Ticket ticket : tickets) {

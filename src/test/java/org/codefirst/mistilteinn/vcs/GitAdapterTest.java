@@ -12,6 +12,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -424,6 +425,14 @@ public class GitAdapterTest {
 
         verify(mockedCommitCommand).setMessage(message);
         verify(mockedCommitCommand).call();
+    }
+
+    @Test
+    public void testGetDirectory() throws Exception {
+        File file = new File(".");
+        doReturn(file).when(mockedRepository).getDirectory();
+        File result = gitAdapter.getDirectory();
+        assertThat(result, is(file));
     }
 
 }
