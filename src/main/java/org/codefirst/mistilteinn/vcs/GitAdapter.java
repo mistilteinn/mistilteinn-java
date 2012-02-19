@@ -205,13 +205,14 @@ public class GitAdapter {
     }
 
     /**
-     * rebase to master branch.
+     * rebase to a branch.
+     * @param branchName branch name
      */
-    public void masterize() throws MistilteinnException {
+    public void masterize(String branchName) throws MistilteinnException {
         try {
-            RebaseResult rebaseResult = rebaseTo("master");
+            RebaseResult rebaseResult = rebaseTo(branchName);
             RevCommit currentCommit = rebaseResult.getCurrentCommit();
-            checkoutTo("master");
+            checkoutTo(branchName);
             resetTo(currentCommit, ResetType.HARD);
         } catch (GitAPIException e) {
             throw new MistilteinnException(e);

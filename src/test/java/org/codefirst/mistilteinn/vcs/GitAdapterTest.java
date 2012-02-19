@@ -11,8 +11,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -327,28 +327,41 @@ public class GitAdapterTest {
         gitAdapter.fixup("");
     }
 
+    @Test
+    public void testMasterizeToBranch() throws Exception {
+        String branchName = "branch";
+        RebaseResult mockedRebaseResult = mock(RebaseResult.class);
+        doReturn(mockedRebaseResult).when(gitAdapter).rebaseTo(branchName);
+        RevCommit mockedCommit = mock(RevCommit.class);
+        doReturn(mockedCommit).when(mockedRebaseResult).getCurrentCommit();
+        doNothing().when(gitAdapter).checkoutTo(branchName);
+        doReturn(null).when(gitAdapter).resetTo(mockedCommit, ResetType.HARD);
+
+        gitAdapter.masterize(branchName);
+    }
+
     @Test(expected = MistilteinnException.class)
     public void testMasterizeThrowNoHeadException() throws Exception {
         doThrow(new NoHeadException("")).when(gitAdapter).rebaseTo("master");
-        gitAdapter.masterize();
+        gitAdapter.masterize("master");
     }
 
     @Test(expected = MistilteinnException.class)
     public void testMasterizeThrowRefNotFoundException() throws Exception {
         doThrow(new RefNotFoundException("")).when(gitAdapter).rebaseTo("master");
-        gitAdapter.masterize();
+        gitAdapter.masterize("master");
     }
 
     @Test(expected = MistilteinnException.class)
     public void testMasterizeThrowGitAPIException() throws Exception {
         doThrow(mock(GitAPIException.class)).when(gitAdapter).rebaseTo("master");
-        gitAdapter.masterize();
+        gitAdapter.masterize("master");
     }
 
     @Test(expected = MistilteinnException.class)
     public void testMasterizeThrowJGitInternalException() throws Exception {
         doThrow(mock(JGitInternalException.class)).when(gitAdapter).rebaseTo("master");
-        gitAdapter.masterize();
+        gitAdapter.masterize("master");
     }
 
     @Test(expected = MistilteinnException.class)
@@ -359,7 +372,7 @@ public class GitAdapterTest {
         doReturn(mockedCommit).when(mockedRebaseResult).getCurrentCommit();
         doNothing().when(gitAdapter).checkoutTo("master");
         doThrow(new IOException()).when(gitAdapter).resetTo((RevCommit) anyObject(), (ResetType) anyObject());
-        gitAdapter.masterize();
+        gitAdapter.masterize("master");
     }
 
     @Test

@@ -66,7 +66,15 @@ public class Mistilteinn {
      * rebase to master branch.
      */
     public void masterize() throws MistilteinnException {
-        getVCSAdapter().masterize();
+        this.masterize("master");
+    }
+
+    /**
+     * rebase to a branch.
+     * @param branchName branch name
+     */
+    public void masterize(String branchName) throws MistilteinnException {
+        getVCSAdapter().masterize(branchName);
     }
 
     /**
