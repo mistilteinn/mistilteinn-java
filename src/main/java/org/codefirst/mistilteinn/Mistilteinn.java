@@ -38,11 +38,14 @@ public class Mistilteinn {
     /**
      * change branch to id/#{ticketId}.
      * @param ticketId ticket id
-     * @return true if success
+     * @return specified ticket
      * @throws MistilteinnException exceptions
      */
-    public void ticket(int ticketId) throws MistilteinnException {
+    public Ticket ticket(int ticketId) throws MistilteinnException {
         getVCSAdapter().ticket(ticketId);
+        Ticket ticket = getITS().getTicket(ticketId);
+        System.out.println(ticket.toString());
+        return ticket;
     }
 
     /**
@@ -79,21 +82,15 @@ public class Mistilteinn {
 
     /**
      * list tickets.
+     * @return tickets
      * @throws MistilteinnException fail to access to ITS
      */
-    public void list() throws MistilteinnException {
-        File scmDirectory = this.gitAdapter.getDirectory();
-        File projectDirectory = scmDirectory.getParentFile();
-        String projectPath = ".";
-        if (projectDirectory != null) {
-            projectPath = projectDirectory.getPath();
-        }
-        MistilteinnConfiguration config = MistilteinnConfigurationFactory.createConfiguration(projectPath);
-        ITS its = ITSFactory.createITS(config);
-        Ticket[] tickets = its.listTickets();
+    public Ticket[] list() throws MistilteinnException {
+        Ticket[] tickets = getITS().listTickets();
         for (Ticket ticket : tickets) {
             System.out.println(ticket);
         }
+        return tickets;
     }
 
     /**
@@ -102,6 +99,22 @@ public class Mistilteinn {
      */
     protected GitAdapter getVCSAdapter() {
         return this.gitAdapter;
+    }
+
+    /**
+     * get ITS object.
+     * @return ITS
+     * @throws MistilteinnException fail to get its object
+     */
+    protected ITS getITS() throws MistilteinnException {
+        File scmDirectory = getVCSAdapter().getDirectory();
+        File projectDirectory = scmDirectory.getParentFile();
+        String projectPath = ".";
+        if (projectDirectory != null) {
+            projectPath = projectDirectory.getPath();
+        }
+        MistilteinnConfiguration config = MistilteinnConfigurationFactory.createConfiguration(projectPath);
+        return ITSFactory.createITS(config);
     }
 
     public static void main(String[] args) throws Exception {
