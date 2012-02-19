@@ -9,9 +9,15 @@ public interface ITS {
 
     /**
      * List tickets of specified project.
-     * @param projectId the project identifier
      * @return tickets
      */
     Ticket[] listTickets() throws MistilteinnException;
 
+    /**
+     * get a ticket of specified project. <br/>
+     * if not found, returns null
+     * @param ticketId ticket id
+     * @return a ticket
+     */
+    Ticket getTicket(int ticketId) throws MistilteinnException;
 }

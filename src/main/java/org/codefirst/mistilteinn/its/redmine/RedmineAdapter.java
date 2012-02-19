@@ -12,6 +12,7 @@ import org.redmine.ta.AuthenticationException;
 import org.redmine.ta.NotFoundException;
 import org.redmine.ta.RedmineException;
 import org.redmine.ta.RedmineManager;
+import org.redmine.ta.RedmineManager.INCLUDE;
 import org.redmine.ta.beans.Issue;
 
 /**
@@ -68,6 +69,26 @@ public class RedmineAdapter implements ITS {
             throw new MistilteinnException(e);
         }
         return (Ticket[]) list.toArray(new Ticket[list.size()]);
+    }
+
+    /** {@inheritDoc} */
+    public Ticket getTicket(int ticketId) throws MistilteinnException {
+        RedmineManager mgr = getRedmineManager();
+        Ticket ticket = null;
+        try {
+            // TODO set journals to a ticket
+            Issue issue = mgr.getIssueById(ticketId, INCLUDE.journals);
+            ticket = new Ticket(issue.getId(), issue.getSubject());
+        } catch (IOException e) {
+            throw new MistilteinnException(e);
+        } catch (AuthenticationException e) {
+            throw new MistilteinnException(e);
+        } catch (NotFoundException e) {
+            throw new MistilteinnException(e);
+        } catch (RedmineException e) {
+            throw new MistilteinnException(e);
+        }
+        return ticket;
     }
 
     /**
