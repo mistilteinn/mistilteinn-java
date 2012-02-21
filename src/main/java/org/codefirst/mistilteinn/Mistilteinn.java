@@ -20,11 +20,11 @@ public class Mistilteinn {
 
     /**
      * constructor.
-     * @param gitPath path to repository (.git)
+     * @param rootPath path to project root
      * @throws IOException
      */
-    public Mistilteinn(String gitPath) throws IOException {
-        this(new GitAdapter(gitPath));
+    public Mistilteinn(String rootPath) throws IOException {
+        this(new GitAdapter(new File(rootPath, ".git").getAbsolutePath()));
     }
 
     /**
