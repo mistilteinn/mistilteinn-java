@@ -15,7 +15,7 @@ public class MistilteinnTest {
     public void testTicket() throws Exception {
         int ticketId = 100;
         GitAdapter mockedGitAdapter = mock(GitAdapter.class);
-        Mistilteinn mistilteinn = spy(new Mistilteinn(mockedGitAdapter));
+        Mistilteinn mistilteinn = spy(new Mistilteinn(""));
         doReturn(mockedGitAdapter).when(mistilteinn).getVCSAdapter();
         ITS mockedITS = mock(ITS.class);
         doReturn(new Ticket(Integer.valueOf(ticketId), "subject")).when(mockedITS).getTicket(ticketId);
@@ -29,7 +29,7 @@ public class MistilteinnTest {
     @Test
     public void testMasterize() throws Exception {
         GitAdapter mockedGitAdapter = mock(GitAdapter.class);
-        Mistilteinn mistilteinn = spy(new Mistilteinn(mockedGitAdapter));
+        Mistilteinn mistilteinn = spy(new Mistilteinn(""));
         doReturn(mockedGitAdapter).when(mistilteinn).getVCSAdapter();
 
         mistilteinn.masterize();
@@ -41,7 +41,7 @@ public class MistilteinnTest {
     public void testMasterizeWithBranchName() throws Exception {
         String branchName = "branch";
         GitAdapter mockedGitAdapter = mock(GitAdapter.class);
-        Mistilteinn mistilteinn = spy(new Mistilteinn(mockedGitAdapter));
+        Mistilteinn mistilteinn = spy(new Mistilteinn(""));
         doReturn(mockedGitAdapter).when(mistilteinn).getVCSAdapter();
 
         mistilteinn.masterize(branchName);

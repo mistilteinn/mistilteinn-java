@@ -17,22 +17,16 @@ import org.codefirst.mistilteinn.vcs.GitAdapter;
 public class Mistilteinn {
     /** target repository. */
     private GitAdapter gitAdapter;
+    /** project root path */
+    private String projectPath;
 
     /**
      * constructor.
-     * @param rootPath path to project root
+     * @param projectPath path to project root
      * @throws IOException
      */
-    public Mistilteinn(String rootPath) throws IOException {
-        this(new GitAdapter(new File(rootPath, ".git").getAbsolutePath()));
-    }
-
-    /**
-     * constructor.
-     * @param adapter vcs adapter
-     */
-    public Mistilteinn(GitAdapter adapter) {
-        this.gitAdapter = adapter;
+    public Mistilteinn(String projectPath) throws IOException {
+        this.projectPath = projectPath;
     }
 
     /**
@@ -96,8 +90,16 @@ public class Mistilteinn {
     /**
      * get a VCS adapter object.
      * @return vcs adapter object
+     * @throws IOException cannot access git directory
      */
-    protected GitAdapter getVCSAdapter() {
+    protected GitAdapter getVCSAdapter() throws MistilteinnException {
+        if (this.gitAdapter == null) {
+            try {
+                gitAdapter = new GitAdapter(new File(projectPath, ".git").getAbsolutePath());
+            } catch (IOException e) {
+                throw new MistilteinnException(e);
+            }
+        }
         return this.gitAdapter;
     }
 
