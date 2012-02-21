@@ -1,7 +1,12 @@
 package org.codefirst.mistilteinn;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.codefirst.mistilteinn.config.MistilteinnConfiguration;
@@ -27,6 +32,78 @@ public class Mistilteinn {
      */
     public Mistilteinn(String projectPath) throws IOException {
         this.projectPath = projectPath;
+    }
+
+    /**
+     * initialize configuration.
+     * @throws MistilteinnException cannot create configuration
+     */
+    public void init() throws MistilteinnException {
+        File configFile = createConfigFile();
+        OutputStream os = null;
+        try {
+            MistilteinnConfiguration config = getMistilteinnConfiguration();
+            os = getConfigFileOutputStream(configFile);
+            config.save(os);
+        } catch (FileNotFoundException e) {
+            throw new MistilteinnException(e);
+        } finally {
+            if (os != null) {
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    throw new MistilteinnException(e);
+                }
+            }
+        }
+    }
+
+    protected OutputStream getConfigFileOutputStream(File configFile) throws FileNotFoundException {
+        return new FileOutputStream(configFile);
+    }
+
+    protected MistilteinnConfiguration getMistilteinnConfiguration() throws MistilteinnException {
+        MistilteinnConfiguration config = MistilteinnConfigurationFactory.createConfiguration(this.projectPath);
+        config.setITS("redmine");
+        config.setConfiguration("redmine", getInitialRedmineConfigration());
+        config.setConfiguration("github", getInitialGithubConfigration());
+        return config;
+    }
+
+    protected File createConfigFile() throws MistilteinnException {
+        // Fixme duprecated path string from YamlMistilteinnConfiguration class
+        File configDir = new File(this.projectPath, ".mistilteinn");
+        if (!configDir.exists()) {
+            if (!configDir.mkdir()) {
+                throw new MistilteinnException(new Exception("cannot create " + configDir.getAbsolutePath()));
+            }
+        }
+        File configFile = new File(configDir, "config.yaml");
+        try {
+            if (!configFile.exists()) {
+                if (!configFile.createNewFile()) {
+                    throw new MistilteinnException(new Exception("cannot create " + configFile.getAbsolutePath()));
+                }
+            }
+        } catch (IOException e) {
+            throw new MistilteinnException(e);
+        }
+        return configFile;
+    }
+
+    protected Map<String, String> getInitialGithubConfigration() {
+        Map<String, String> config = new LinkedHashMap<String, String>();
+        config.put("name", "your_id");
+        config.put("project", "your_project_name");
+        return config;
+    }
+
+    protected Map<String, String> getInitialRedmineConfigration() {
+        Map<String, String> config = new LinkedHashMap<String, String>();
+        config.put("url", "https://example.com/redmine/");
+        config.put("project", "some-project-name");
+        config.put("apikey", "your_key");
+        return config;
     }
 
     /**
@@ -121,7 +198,9 @@ public class Mistilteinn {
 
     public static void main(String[] args) throws Exception {
         Mistilteinn mistilteinn = new Mistilteinn(args[0]);
-        if (StringUtils.equals(args[1], "ticket")) {
+        if (StringUtils.equals(args[1], "init")) {
+            mistilteinn.init();
+        } else if (StringUtils.equals(args[1], "ticket")) {
             mistilteinn.ticket(Integer.valueOf(args[2]));
         } else if (StringUtils.equals(args[1], "now")) {
             mistilteinn.now();

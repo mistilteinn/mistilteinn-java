@@ -1,16 +1,56 @@
 package org.codefirst.mistilteinn;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
+import java.io.File;
+import java.io.OutputStream;
+import java.util.Map;
+
+import org.codefirst.mistilteinn.config.MistilteinnConfiguration;
 import org.codefirst.mistilteinn.its.ITS;
 import org.codefirst.mistilteinn.its.Ticket;
 import org.codefirst.mistilteinn.vcs.GitAdapter;
 import org.junit.Test;
 
 public class MistilteinnTest {
+
+    @Test
+    public void testInit() throws Exception {
+        Mistilteinn mistilteinn = spy(new Mistilteinn(""));
+        File configFile = new File("/path/to/.mistilteinn/config.yaml");
+        doReturn(configFile).when(mistilteinn).createConfigFile();
+        MistilteinnConfiguration mockedConfig = mock(MistilteinnConfiguration.class);
+        doReturn(mockedConfig).when(mistilteinn).getMistilteinnConfiguration();
+        OutputStream mockedOutputStream = mock(OutputStream.class);
+        doReturn(mockedOutputStream).when(mistilteinn).getConfigFileOutputStream(configFile);
+
+        mistilteinn.init();
+
+        verify(mockedConfig).save(mockedOutputStream);
+    }
+
+    @Test
+    public void testGetInitialRedmineConfigration() throws Exception {
+        Mistilteinn mistilteinn = spy(new Mistilteinn(""));
+        Map<String, String> configration = mistilteinn.getInitialRedmineConfigration();
+        assertThat(configration.containsKey("url"), is(true));
+        assertThat(configration.containsKey("project"), is(true));
+        assertThat(configration.containsKey("apikey"), is(true));
+    }
+
+    @Test
+    public void testGetInitialGithubConfigration() throws Exception {
+        Mistilteinn mistilteinn = spy(new Mistilteinn(""));
+        Map<String, String> configration = mistilteinn.getInitialGithubConfigration();
+        assertThat(configration.containsKey("name"), is(true));
+        assertThat(configration.containsKey("project"), is(true));
+    }
+
     @Test
     public void testTicket() throws Exception {
         int ticketId = 100;

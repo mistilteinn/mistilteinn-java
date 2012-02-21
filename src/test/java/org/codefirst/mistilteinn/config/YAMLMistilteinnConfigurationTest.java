@@ -13,6 +13,8 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
 
 public class YAMLMistilteinnConfigurationTest {
 
@@ -63,4 +65,16 @@ public class YAMLMistilteinnConfigurationTest {
         verify(os).close();
     }
 
+    @Test
+    public void testYamlDump() throws Exception {
+        LinkedHashMap<String, Object> ticket = new LinkedHashMap<String, Object>();
+        LinkedHashMap<String, String> source = new LinkedHashMap<String, String>();
+        source.put("source", "redmine");
+        ticket.put("ticket", source);
+
+        DumperOptions options = new DumperOptions();
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        Yaml yaml = new Yaml(options);
+        assertThat(yaml.dump(ticket), is("ticket:\n  source: redmine\n"));
+    }
 }

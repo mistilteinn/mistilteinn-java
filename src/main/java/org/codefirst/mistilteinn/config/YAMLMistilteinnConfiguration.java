@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.codefirst.mistilteinn.MistilteinnException;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 /**
@@ -47,6 +48,9 @@ public class YAMLMistilteinnConfiguration implements MistilteinnConfiguration {
     public YAMLMistilteinnConfiguration(InputStream is) {
         Yaml parser = new Yaml();
         yaml = (Map<String, Object>) parser.load(is);
+        if (yaml == null) {
+            yaml = new LinkedHashMap<String, Object>();
+        }
     }
 
     public String getITS() {
@@ -56,6 +60,10 @@ public class YAMLMistilteinnConfiguration implements MistilteinnConfiguration {
 
     public void setITS(String id) {
         Map<String, Object> ticket = (Map<String, Object>) yaml.get(TICKET);
+        if (ticket == null) {
+            ticket = new LinkedHashMap<String, Object>();
+            yaml.put(TICKET, ticket);
+        }
         ticket.put(SOURCE, id);
     }
 
@@ -77,8 +85,9 @@ public class YAMLMistilteinnConfiguration implements MistilteinnConfiguration {
     }
 
     public void save(OutputStream os) throws MistilteinnException {
-        String dump = new Yaml().dump(yaml);
-
+        DumperOptions options = new DumperOptions();
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        String dump = new Yaml(options).dump(yaml);
         OutputStreamWriter osw = null;
         try {
             osw = new OutputStreamWriter(os, "UTF-8");
