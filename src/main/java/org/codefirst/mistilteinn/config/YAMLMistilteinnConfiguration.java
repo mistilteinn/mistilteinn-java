@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -90,7 +91,7 @@ public class YAMLMistilteinnConfiguration implements MistilteinnConfiguration {
         String dump = new Yaml(options).dump(yaml);
         OutputStreamWriter osw = null;
         try {
-            osw = new OutputStreamWriter(os, "UTF-8");
+            osw = getOutputStreamWriter(os);
             osw.write(dump);
         } catch (IOException e) {
             throw new MistilteinnException(e);
@@ -105,4 +106,7 @@ public class YAMLMistilteinnConfiguration implements MistilteinnConfiguration {
         }
     }
 
+    protected OutputStreamWriter getOutputStreamWriter(OutputStream os) throws UnsupportedEncodingException {
+        return new OutputStreamWriter(os, "UTF-8");
+    }
 }

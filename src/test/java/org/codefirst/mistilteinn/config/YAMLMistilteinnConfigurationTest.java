@@ -2,15 +2,21 @@ package org.codefirst.mistilteinn.config;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.codefirst.mistilteinn.MistilteinnException;
 import org.junit.Before;
 import org.junit.Test;
 import org.yaml.snakeyaml.DumperOptions;
@@ -63,6 +69,17 @@ public class YAMLMistilteinnConfigurationTest {
         OutputStream os = mock(OutputStream.class);
         this.config.save(os);
         verify(os).close();
+    }
+
+    @Test(expected = MistilteinnException.class)
+    public void testSaveThrowsIOException() throws Exception {
+        config = spy(config);
+        OutputStream os = mock(OutputStream.class);
+        OutputStreamWriter osw = mock(OutputStreamWriter.class);
+        doReturn(osw).when(config).getOutputStreamWriter(os);
+        doThrow(mock(IOException.class)).when(osw).write(anyString());
+        this.config.save(os);
+
     }
 
     @Test
