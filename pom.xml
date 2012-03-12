@@ -102,7 +102,7 @@
                     </docletArtifact>
                     <additionalparam>
                         -hdf project.name "${project.name}"
-                        -d ${project.build.directory}/apidocs
+                        -d ${project.reporting.outputDirectory}/apidocs
                     </additionalparam>
                 </configuration>
                 <reportSets>
