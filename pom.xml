@@ -100,7 +100,10 @@
                         <artifactId>doclava</artifactId>
                         <version>1.0.3</version>
                     </docletArtifact>
-                    <additionalparam>-hdf project.name "${project.name}"</additionalparam>
+                    <additionalparam>
+                        -hdf project.name "${project.name}"
+                        -d ${project.build.directory}/apidocs
+                    </additionalparam>
                 </configuration>
                 <reportSets>
                     <reportSet>
