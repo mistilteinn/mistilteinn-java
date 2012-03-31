@@ -391,6 +391,16 @@ public class GitAdapterTest {
     }
 
     @Test
+    public void testGetCurrentBranchName() throws Exception {
+        Repository mockedRepository = mock(Repository.class);
+        doReturn("id/100").when(mockedRepository).getBranch();
+        doReturn(mockedRepository).when(gitAdapter).getRepository();
+        String currentBranchName = gitAdapter.getCurrentBranchName();
+
+        assertThat(currentBranchName, is("id/100"));
+    }
+
+    @Test
     public void testResetTo() throws Exception {
         ResetType resetType = ResetType.MIXED;
 

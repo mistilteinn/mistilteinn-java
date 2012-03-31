@@ -164,6 +164,10 @@ public class Mistilteinn {
         return tickets;
     }
 
+    public String getCurrentBranchName() throws MistilteinnException {
+        return getVCSAdapter().getCurrentBranchName();
+    }
+
     /**
      * get a VCS adapter object.
      * @return vcs adapter object
@@ -210,6 +214,8 @@ public class Mistilteinn {
             mistilteinn.masterize();
         } else if (StringUtils.equals(args[1], "list")) {
             mistilteinn.list();
+        } else if (StringUtils.equals(args[1], "currentBranch")) {
+            System.out.println(mistilteinn.getCurrentBranchName());
         }
     }
 }

@@ -88,4 +88,14 @@ public class MistilteinnTest {
 
         verify(mockedGitAdapter).masterize(branchName);
     }
+
+    @Test
+    public void testGetCurrentBranch() throws Exception {
+        String branch = "id/100";
+        GitAdapter mockedGitAdapter = mock(GitAdapter.class);
+        Mistilteinn mistilteinn = spy(new Mistilteinn(""));
+        doReturn(mockedGitAdapter).when(mistilteinn).getVCSAdapter();
+        doReturn(branch).when(mockedGitAdapter).getCurrentBranchName();
+        assertThat(mistilteinn.getCurrentBranchName(), is(branch));
+    }
 }

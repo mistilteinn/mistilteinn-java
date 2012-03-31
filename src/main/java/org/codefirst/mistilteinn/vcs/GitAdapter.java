@@ -224,6 +224,21 @@ public class GitAdapter {
     }
 
     /**
+     * get a current branch name.
+     * @return branch name
+     * @throws MistilteinnException
+     */
+    public String getCurrentBranchName() throws MistilteinnException {
+        String head = StringUtils.EMPTY;
+        try {
+            head = getRepository().getBranch();
+        } catch (IOException e) {
+            throw new MistilteinnException(e);
+        }
+        return head;
+    }
+
+    /**
      * rebase to branch
      * @param branchName branch name
      * @return rebase result
@@ -306,6 +321,14 @@ public class GitAdapter {
      * @return Git
      */
     protected Git getGit() {
-        return new Git(this.repository);
+        return new Git(getRepository());
+    }
+
+    /**
+     * get a repository.
+     * @return repository
+     */
+    protected Repository getRepository() {
+        return this.repository;
     }
 }
